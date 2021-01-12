@@ -31,18 +31,20 @@ vid = VideoReader('fot.mp4');  % video reader for video file
   numFrames = vid.NumFrames;
   num=numFrames;
   f=0;
+ 
+mkdir PHOTO
 for i = 1:1:num
   frames = read(vid,i);
-  imwrite(frames,['C:\Users\Eray Mete Zeray\Desktop\DERS\YL 1. DONEM\EE583 DIGITAL VIDEO PROCESSING\PROJECT\Kod\FOTO\', sprintf('%03d.jpg',i)]);
+  imwrite(frames,['PHOTO\', sprintf('%03d.jpg',i)]);
     f=f+1;
 end 
-multi = dir('C:\Users\Eray Mete Zeray\Desktop\DERS\YL 1. DONEM\EE583 DIGITAL VIDEO PROCESSING\PROJECT\Kod\FOTO\*.jpg*');
+multi = dir('PHOTO\*.jpg*');
 
 %% Read
 
 
 % Load images.
-buildingScene = imageDatastore('C:\Users\Eray Mete Zeray\Desktop\DERS\YL 1. DONEM\EE583 DIGITAL VIDEO PROCESSING\PROJECT\Kod\FOTO\','FileExtensions',{'.jpg'});
+buildingScene = imageDatastore('PHOTO\','FileExtensions',{'.jpg'});
 
 % Display images to be stitched
 montage(buildingScene.Files)
@@ -171,6 +173,19 @@ figure
 imshow(panorama)
 
 [I2, rect] = imcrop(panorama);
-imshow(I2) ;
-  
+
+disp(clock)
+try
+    waitforbuttonpress
+    % Close figure or leave it open
+    close(h)
+    disp('mouse or key pressed')
+catch
+    disp('figure closed')
+end
+close all
+disp(clock)
+
+delete fot.mp4 % delete unnecessary file
+[status, message, messageid] = rmdir('PHOTO', 's')
 
