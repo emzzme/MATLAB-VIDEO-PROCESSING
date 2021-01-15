@@ -8,6 +8,9 @@ format compact; %f ormat for mask
 fontSize = 15; % for figure 
 tic;
 
+checkpoint = input('Kaç noktalı doğrulama olsun?');
+framenumber = input('Frame number kaça bölünsün?');
+
 %% 2X VIDEO
 
 videoIn = VideoReader('vid.mp4'); % video reader for video file
@@ -19,7 +22,7 @@ frameNum = 1; % initial frame number
 while hasFrame(videoIn) % chose the odd number
     videoFrame = readFrame(videoIn); % read every frame in video
     frameNum = frameNum+1;  % frame number counter
-    s = mod(frameNum,3) ;    % mod selector
+    s = mod(frameNum,framenumber) ;    % mod selector
         if s == 0       % select odd frame
             writeVideo(videoOut,videoFrame);    % make a video file with combined every frame
         end
@@ -96,7 +99,7 @@ for n = 2:numImages
     % Estimate the transformation between I(n) and I(n-1).
     
         % Estimate the transformation between I(n) and I(n-1).
-    if size(indexPairs, 1) >= 3
+    if size(indexPairs, 1) >= checkpoint
         tforms(n) = estimateGeometricTransform(matchedPoints, matchedPointsPrev,...
         'projective', 'Confidence', 99.9, 'MaxNumTrials', 2000);
     else
