@@ -7,13 +7,15 @@ format long g; % format for mask
 format compact; %f ormat for mask
 fontSize = 15; % for figure 
 tic;
+[status, message, messageid] = rmdir('PHOTO', 's')
 
-checkpoint = input('Kaç noktalı doğrulama olsun?');
-framenumber = input('Frame number kaça bölünsün?');
+checkpoint = input('Kaç noktalı doğrulama olsun?   ');
+framenumber = input('Frame number kaça bölünsün?   ');
+
 
 %% 2X VIDEO
 
-videoIn = VideoReader('vid.mp4'); % video reader for video file
+videoIn = VideoReader('genis.mp4'); % video reader for video file
 videoOut = VideoWriter('fot.mp4','MPEG-4'); % video writer for video file 
 open(videoOut); % open video writer 
 frameNum = 1; % initial frame number
@@ -28,6 +30,7 @@ while hasFrame(videoIn) % chose the odd number
         end
 end
 close(videoOut); % open video writer
+
 %% FOTO Write
 
 vid = VideoReader('fot.mp4');  % video reader for video file
