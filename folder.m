@@ -27,23 +27,23 @@ vid = VideoReader('genis1.mp4');  % video reader for video file
   
 mkdir PHOTO
 
-% for y = 1:1:w
-%     
-%     mkdir (['PHOTO\' int2str(u) '\' int2str(f) '\']); % alt klsör oluşturma
-%     
-%     for i = q:1:fold  % fotolaro sıralı yazma
-%         frames = read(vid,i);
-%         imwrite(frames,['PHOTO\' int2str(u) '\' int2str(f) '\', sprintf('%03d.jpg',i)]);
-%     end
-%     
-%     if fol*f < num-fol  % fotoğraf numaralarını seçerek for başlangıcını belirleme
-%         q=q+fol;
-%         fold=fold+fol;
-%     else
-%         fold = num;
-%     end
-%     f=f+1;
-% end
+for y = 1:1:w
+    
+    mkdir (['PHOTO\' int2str(u) '\' int2str(f) '\']); % alt klsör oluşturma
+    
+    for i = q:1:fold  % fotolaro sıralı yazma
+        frames = read(vid,i);
+        imwrite(frames,['PHOTO\' int2str(u) '\' int2str(f) '\', sprintf('%03d.jpg',i)]);
+    end
+    
+    if fol*f < num-fol  % fotoğraf numaralarını seçerek for başlangıcını belirleme
+        q=q+fol;
+        fold=fold+fol;
+    else
+        fold = num;
+    end
+    f=f+1;
+end
 
 if w > fol
     u = u+1;
