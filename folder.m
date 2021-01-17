@@ -49,25 +49,29 @@ if w > fol
     u = u+1;
 end
 
-clearvars -except w u o fol num
+clearvars -except w u o fol num f
 close all;
 
 
 checkpoint = input('Kaç noktalı doğrulama olsun?   ');
 
 %% Read
-f=1;
+s=1;
 q=1;
 fold = fol;
 a = 1;
 w = w/fol;
+g = 0;
+m = 1;
+b = 1;
+f = f-1;
 
-for j = 1:1:w
-    for t = q:1:fold  % fotolaro sıralı yazma
+for j = 1:1:w*10 
+    for t = q:1:fold  % fotoları sıralı yazma
 
         % Load images.
-        if j > w
-            buildingScene = imageDatastore(['PHOTO\' int2str(u) '\' int2str(f) '\'],'FileExtensions',{'.jpg'});
+        if 2*m*w > j > m*w
+            buildingScene = imageDatastore(['PHOTO\' int2str(u) '\' int2str(s) '\'],'FileExtensions',{'.jpg'});
             o = o+1;
         else
             buildingScene = imageDatastore(['PHOTO\' int2str(u-1) '\' int2str(j) '\'],'FileExtensions',{'.jpg'});    
@@ -135,7 +139,7 @@ for j = 1:1:w
         end
 
         %%clear
-        clearvars -except tforms imageSize I numImages buildingScene checkpoint j w u o f q fold fol num t a
+        clearvars -except tforms imageSize I numImages buildingScene checkpoint j w u o f s q fold fol num t a m b
 
         % Compute the output limits  for each transform
         for i = 1:numel(tforms)           
@@ -184,10 +188,6 @@ for j = 1:1:w
         yLimits = [yMin yMax];
         panoramaView = imref2d([height width], xLimits, yLimits);
 
-
-        clearvars -except tforms panoramaView numImages buildingScene blender panorama checkpoint j w u o f q fold fol num t a
-
-
         % Create the panorama.
         for i = 1:numImages
 
@@ -201,32 +201,56 @@ for j = 1:1:w
 
             % Overlay the warpedImage onto the panorama.
             panorama = step(blender, panorama, warpedImage, mask);
+
         end
-    
+
         if u > o
-            mkdir (['PHOTO\' int2str(u) '\'  int2str(f) '\']);
+            mkdir (['PHOTO\' int2str(u) '\'  int2str(s) '\']);
         else 
             u = u+1;
-            mkdir (['PHOTO\' int2str(u) '\'  int2str(f) '\']);
+            mkdir (['PHOTO\' int2str(u) '\'  int2str(s) '\']);
         end
+        b = b+1;
+        
+        imwrite(panorama,fullfile(['PHOTO\' int2str(u) '\' int2str(s) '\', sprintf('%02d.jpg',a)]),'jpg');
 
-        imwrite(panorama,fullfile(['PHOTO\' int2str(u) '\' int2str(f) '\', sprintf('%02d.jpg',a)]),'jpg');
-
-        if fol*f < num-fol  % fotoğraf numaralarını seçerek for başlangıcını belirleme
+        
+        if fol*s < num-fol  % fotoğraf numaralarını seçerek for başlangıcını belirleme
             q=q+fol;
             fold=fold+fol;
         else
             fold = num;
         end    
-        
     end
+ 
+    g = mod(f,fol); 
     
-    if a == fol
-        f=f+1;
-        a = 1;
+    if g == 0
+        if a == fol
+            s=s+1;
+            a = 1;
+        else
+            a = a+1;
+        end
     else
-        a = a+1;
-    end
+        if g < fol
+            if b == f
+                m = m+1;
+                f = s;
+                s = 1;
+                o = o+1;
+                b = 1;
+            else
+                if a == fol
+                    s=s+1;
+                    a = 1;
+                else
+                    a = a+1;
+                end
+            end
+        end
+    end    
+    
     
 %% For displaying the image 
 %    imshow(panorama);
