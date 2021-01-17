@@ -66,7 +66,7 @@ m = 1;
 b = 1;
 f = f-1;
 
-for j = 1:1:w*10 
+for j = 1:1:w*20 
     for t = q:1:fold  % fotoları sıralı yazma
 
         % Load images.
@@ -210,7 +210,7 @@ for j = 1:1:w*10
             u = u+1;
             mkdir (['PHOTO\' int2str(u) '\'  int2str(s) '\']);
         end
-        b = b+1;
+
         
         imwrite(panorama,fullfile(['PHOTO\' int2str(u) '\' int2str(s) '\', sprintf('%02d.jpg',a)]),'jpg');
 
@@ -218,8 +218,10 @@ for j = 1:1:w*10
         if fol*s < num-fol  % fotoğraf numaralarını seçerek for başlangıcını belirleme
             q=q+fol;
             fold=fold+fol;
+            b = b+1;
         else
             fold = num;
+            
         end    
     end
  
