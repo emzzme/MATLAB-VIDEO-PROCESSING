@@ -70,11 +70,11 @@ for j = 1:1:w*20
     for t = q:1:fold  % fotoları sıralı yazma
 
         % Load images.
-        if 2*m*w > j > m*w
-            buildingScene = imageDatastore(['PHOTO\' int2str(u) '\' int2str(s) '\'],'FileExtensions',{'.jpg'});
-            o = o+1;
+        if j < m*w
+            buildingScene = imageDatastore(['PHOTO\' int2str(u-1) '\' int2str(j) '\'],'FileExtensions',{'.jpg'}); 
         else
-            buildingScene = imageDatastore(['PHOTO\' int2str(u-1) '\' int2str(j) '\'],'FileExtensions',{'.jpg'});    
+            buildingScene = imageDatastore(['PHOTO\' int2str(u) '\' int2str(s) '\'],'FileExtensions',{'.jpg'});
+            o = o+1;   
         end
 
         % Display images to be stitched
@@ -139,11 +139,11 @@ for j = 1:1:w*20
         end
 
         %%clear
-        clearvars -except tforms imageSize I numImages buildingScene checkpoint j w u o f s q fold fol num t a m b
+        clearvars -except tforms imageSize I numImages buildingScene checkpoint j w u o f s q fold fol num t a m b g
 
         % Compute the output limits  for each transform
         for i = 1:numel(tforms)           
-            [xlim(i,:), ylim(i,:)] = outputLimits(tforms(i), [1 imageSize(i,2)], [1 imageSize(i,1)]);    
+            [xlim(i,:), ylim(i,:)] = outputLimits(tforms(i), [1 imageSize(i,2)], [1 imageSize(i,1)]);
         end
 
         avgXLim = mean(xlim, 2);
@@ -251,8 +251,10 @@ for j = 1:1:w*20
                 end
             end
         end
-    end    
-    
+    end
+    if q == (fold - 1)
+        fold = fold + s + 1;
+    end
     
 %% For displaying the image 
 %    imshow(panorama);
