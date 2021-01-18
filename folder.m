@@ -42,6 +42,7 @@ for f = 1:1:w
     end
 end
 
+
 clearvars -except w u o fol num f
 close all;
 
@@ -71,15 +72,16 @@ for m = 1:1:h
     b = 1;
     p = 1;
     mkdir (['PHOTO\' int2str(u) '\' int2str(p) '\']); % alt klsör oluşturma
+    if u > 102
+        targetSize = [900 1850];
+    elseif u > 104
+        targetSize = [850 1800];
+    end
 
     for j = 1:1:f
         % Load images.
 
         buildingScene = imageDatastore(['PHOTO\' int2str(u-1) '\' int2str(j) '\'],'FileExtensions',{'.jpg'});
-        
-        if u > 103
-            targetSize = [1013 1800];
-        end
 
         % Display images to be stitched
         %montage(buildingScene.Files)
@@ -216,6 +218,7 @@ for m = 1:1:h
             end
         end
         
+
         C = panorama;
         r = centerCropWindow2d(size(C),targetSize);
         m2 = imcrop(C,r);
@@ -223,6 +226,14 @@ for m = 1:1:h
 
         imwrite(m2,fullfile(['PHOTO\' int2str(u) '\' int2str(p) '\', sprintf('%02d.jpg',j)]),'jpg');
         b = b+1;
+    end
+    len = mod(j,fol);
+    if len ~= 0
+        while mod(len,fol) > 0
+            j = j + 1;
+            imwrite(m2,fullfile(['PHOTO\' int2str(u) '\' int2str(p) '\', sprintf('%02d.jpg',j)]),'jpg');
+            len = len + 1;
+        end
     end
     if b > fol
         f = b / fol;
