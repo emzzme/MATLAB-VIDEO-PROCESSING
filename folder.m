@@ -16,7 +16,7 @@ fol = fold;
 
 %% FOTO Write
 
-vid = VideoReader('düz.mp4');  % video reader for video file
+vid = VideoReader('2.mp4');  % video reader for video file
 numFrames = vid.NumFrames;
 num=numFrames;
 q=1;
@@ -53,6 +53,7 @@ q=1;
 h = 1;
 d = f;
 true = 0;
+targetSize = [1069 1900];
 
 while true == 0
     if d > fol
@@ -75,15 +76,22 @@ for m = 1:1:h
         % Load images.
 
         buildingScene = imageDatastore(['PHOTO\' int2str(u-1) '\' int2str(j) '\'],'FileExtensions',{'.jpg'});
+        
+        if u > 103
+            targetSize = [1013 1800];
+        end
 
         % Display images to be stitched
         %montage(buildingScene.Files)
 
         % Read the first image from the image set.
         I = readimage(buildingScene, 1);
+        
+        r = centerCropWindow2d(size(I),targetSize);
+        m1 = imcrop(I,r);
 
         % Initialize features for I(1)
-        grayImage = rgb2gray(I);
+        grayImage = rgb2gray(m1);
         points = detectSURFFeatures(grayImage);
         [features, points] = extractFeatures(grayImage, points);
 
@@ -138,7 +146,7 @@ for m = 1:1:h
         end
 
         %%clear
-        clearvars -except tforms imageSize I numel numImages buildingScene checkpoint fol num u p b f h
+        clearvars -except tforms imageSize I numel numImages buildingScene checkpoint fol num u p b f h j targetSize
         % Compute the output limits  for each transform
         for i = 1:numel(tforms)           
             [xlim(i,:), ylim(i,:)] = outputLimits(tforms(i), [1 imageSize(i,2)], [1 imageSize(i,1)]);    
@@ -207,7 +215,13 @@ for m = 1:1:h
                 mkdir (['PHOTO\' int2str(u) '\' int2str(p) '\']); % alt klsör oluşturma
             end
         end
-        imwrite(panorama,fullfile(['PHOTO\' int2str(u) '\' int2str(p) '\', sprintf('%02d.jpg',j)]),'jpg');
+        
+        C = panorama;
+        r = centerCropWindow2d(size(C),targetSize);
+        m2 = imcrop(C,r);
+        
+
+        imwrite(m2,fullfile(['PHOTO\' int2str(u) '\' int2str(p) '\', sprintf('%02d.jpg',j)]),'jpg');
         b = b+1;
     end
     if b > fol
