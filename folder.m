@@ -16,18 +16,16 @@ fol = fold;
 
 %% FOTO Write
 
-vid = VideoReader('genis1.mp4');  % video reader for video file
-  numFrames = vid.NumFrames;
-  num=numFrames;
-  f=1;
-  q=1;
-  u=101;
-  o=101;
-  w=num/fold;
+vid = VideoReader('düz.mp4');  % video reader for video file
+numFrames = vid.NumFrames;
+num=numFrames;
+q=1;
+u=101;
+w=num/fold;
   
 mkdir PHOTO
 
-for y = 1:1:w
+for f = 1:1:w
     
     mkdir (['PHOTO\' int2str(u) '\' int2str(f) '\']); % alt klsör oluşturma
     
@@ -42,11 +40,6 @@ for y = 1:1:w
     else
         fold = num;
     end
-    f=f+1;
-end
-
-if w > fol
-    u = u+1;
 end
 
 clearvars -except w u o fol num f
@@ -56,26 +49,32 @@ close all;
 checkpoint = input('Kaç noktalı doğrulama olsun?   ');
 
 %% Read
-s=1;
 q=1;
-fold = fol;
-a = 1;
-w = w/fol;
-g = 0;
-m = 1;
-b = 1;
-f = f-1;
+h = 1;
+d = f;
+true = 0;
 
-for j = 1:1:w*20 
-    for t = q:1:fold  % fotoları sıralı yazma
+while true == 0
+    if d > fol
+        d = d / fol;
+        h = h + 1;
+    else
+        true = 1;
+        h = h+1;
+    end
+end    
+%%
+for m = 1:1:h
+    
+    u = u+1;
+    b = 1;
+    p = 1;
+    mkdir (['PHOTO\' int2str(u) '\' int2str(p) '\']); % alt klsör oluşturma
 
+    for j = 1:1:f
         % Load images.
-        if j < m*w
-            buildingScene = imageDatastore(['PHOTO\' int2str(u-1) '\' int2str(j) '\'],'FileExtensions',{'.jpg'}); 
-        else
-            buildingScene = imageDatastore(['PHOTO\' int2str(u) '\' int2str(s) '\'],'FileExtensions',{'.jpg'});
-            o = o+1;   
-        end
+
+        buildingScene = imageDatastore(['PHOTO\' int2str(u-1) '\' int2str(j) '\'],'FileExtensions',{'.jpg'});
 
         % Display images to be stitched
         %montage(buildingScene.Files)
@@ -139,11 +138,10 @@ for j = 1:1:w*20
         end
 
         %%clear
-        clearvars -except tforms imageSize I numImages buildingScene checkpoint j w u o f s q fold fol num t a m b g
-
+        clearvars -except tforms imageSize I numel numImages buildingScene checkpoint fol num u p b f h
         % Compute the output limits  for each transform
         for i = 1:numel(tforms)           
-            [xlim(i,:), ylim(i,:)] = outputLimits(tforms(i), [1 imageSize(i,2)], [1 imageSize(i,1)]);
+            [xlim(i,:), ylim(i,:)] = outputLimits(tforms(i), [1 imageSize(i,2)], [1 imageSize(i,1)]);    
         end
 
         avgXLim = mean(xlim, 2);
@@ -203,72 +201,21 @@ for j = 1:1:w*20
             panorama = step(blender, panorama, warpedImage, mask);
 
         end
-
-        if u > o
-            mkdir (['PHOTO\' int2str(u) '\'  int2str(s) '\']);
-        else 
-            u = u+1;
-            mkdir (['PHOTO\' int2str(u) '\'  int2str(s) '\']);
-        end
-
-        
-        imwrite(panorama,fullfile(['PHOTO\' int2str(u) '\' int2str(s) '\', sprintf('%02d.jpg',a)]),'jpg');
-
-        
-        if fol*s < num-fol  % fotoğraf numaralarını seçerek for başlangıcını belirleme
-            q=q+fol;
-            fold=fold+fol;
-            b = b+1;
-        else
-            fold = num;
-            
-        end    
-    end
- 
-    g = mod(f,fol); 
-    
-    if g == 0
-        if a == fol
-            s=s+1;
-            a = 1;
-        else
-            a = a+1;
-        end
-    else
-        if g < fol
-            if b == f
-                m = m+1;
-                f = s;
-                s = 1;
-                o = o+1;
-                b = 1;
-            else
-                if a == fol
-                    s=s+1;
-                    a = 1;
-                else
-                    a = a+1;
-                end
+        if j > 1
+            if mod(j,fol) == 1
+                p = p+1;
+                mkdir (['PHOTO\' int2str(u) '\' int2str(p) '\']); % alt klsör oluşturma
             end
         end
+        imwrite(panorama,fullfile(['PHOTO\' int2str(u) '\' int2str(p) '\', sprintf('%02d.jpg',j)]),'jpg');
+        b = b+1;
     end
-    if q == (fold - 1)
-        fold = fold + s + 1;
+    if b > fol
+        f = b / fol;
+    else
+        f = b;
     end
-    
-%% For displaying the image 
-%    imshow(panorama);
-%     disp(clock)
-%     try
-%         waitforbuttonpress
-%         % Close figure or leave it open
-%         close(h)
-%         disp('mouse or key pressed')
-%     catch
-%         disp('figure closed')
-%     end
-    close all
-    disp(clock)   
+    j = 1;
 end
 
 %[status, message, messageid] = rmdir('PHOTO', 's');
